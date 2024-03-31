@@ -1,8 +1,12 @@
 import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
+
+    const navigate=useNavigate()
 
     const [data, setData]= useState(
         {
@@ -11,10 +15,30 @@ const Login = () => {
         }
     )
 
-    const loginUser = (e) =>
+    const loginUser =  async(e) =>
     {
         e.preventDefault()
-        axios.get('/')
+        const {phoneNumber,password}=data
+        try {
+            const {data} = await axios.post('/user/login-user', {
+                phoneNumber,password
+            })
+
+            if(data.error)
+            {
+                toast.error(data.error)
+            }
+            else{
+                setData({})
+                toast.success("logged in  successfully")
+                navigate('/orders')
+            }
+
+            
+        } catch (error) {
+            console.error(error)
+        }
+        
     }
   return (
     <div>
@@ -25,7 +49,7 @@ const Login = () => {
 
         <label>Password</label>
         <input type='password' placeholder='enter password'
-         value={data.password} onChange={(e)=>setData({...setData,password:e.target.value})}/>
+         value={data.password} onChange={(e)=>setData({...data,password:e.target.value})}/>
 
         <button type="submit">Login</button>
       </form>

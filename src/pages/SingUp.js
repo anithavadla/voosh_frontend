@@ -1,8 +1,11 @@
 import React from 'react'
-import { useState } from 'react'    
-
+import { useState } from 'react'  
+import axios from 'axios'  
+import {toast} from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 const SingUp = () => {
 
+    const navigate=useNavigate()
     const [data,setData]=useState(
         {
             name:'',
@@ -11,9 +14,30 @@ const SingUp = () => {
         }
     )
 
-    const singUpUser =(e)=>
+    const singUpUser = async(e)=>
     {
         e.preventDefault()
+
+        const {name, phoneNumber,password}=data
+        try {
+            const {data} = await axios.post('/user/add-user', {
+                name,phoneNumber,password
+            })
+
+            if(data.error)
+            {
+                toast.error(data.error)
+            }
+            else{
+                setData({})
+                toast.success("Signed up successfully")
+                navigate('/login')
+            }
+
+            
+        } catch (error) {
+            console.error(error)
+        }
 
     }
 
